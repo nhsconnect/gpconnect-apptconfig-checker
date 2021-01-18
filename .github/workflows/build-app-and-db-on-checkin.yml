@@ -1,10 +1,6 @@
 name: Build app and db on checkin
 
-on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+on: push
 
 env:
   DB_HOST: localhost
@@ -30,7 +26,10 @@ jobs:
 
     steps:
 
-      - name: Check out main branch
+      - name: Print the current branch name
+        run: echo "$GITHUB_REF"
+
+      - name: Check out branch
         uses: actions/checkout@main
         
       - name: Set up dotnet
