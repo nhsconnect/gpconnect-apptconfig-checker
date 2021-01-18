@@ -8,6 +8,8 @@ jobs:
     name: Build and push to docker hub
     runs-on: ubuntu-latest
     steps:
+      - name: Print the current branch name
+        run: echo "$GITHUB_REF"
       - name: Check out the repo
         uses: actions/checkout@v2
       - name: Push application image to docker hub
