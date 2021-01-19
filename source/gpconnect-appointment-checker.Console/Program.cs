@@ -91,7 +91,7 @@ namespace gpconnect_appointment_checker.Console
 
                         _clientCertificate = pfxFormattedCertificate;
 
-                        ldapConnection.UserDefinedServerCertValidationDelegate += ValidateServerCertificate;
+                        ldapConnection.UserDefinedServerCertValidationDelegate += ValidateServerCertificateChain;
                         ldapConnection.UserDefinedClientCertSelectionDelegate += SelectLocalCertificate;
                     }
 
