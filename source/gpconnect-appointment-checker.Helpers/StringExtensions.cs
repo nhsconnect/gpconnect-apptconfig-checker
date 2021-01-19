@@ -25,14 +25,14 @@ namespace gpconnect_appointment_checker.Helpers
             addressLines.Add(city);
             addressLines.Add(postalCode);
             addressLines.Add(country);
-            return string.Join(", ", addressLines.Where(s => !string.IsNullOrEmpty(s)));
+            return string.Join(", ", addressLines.Where(s => !string.IsNullOrEmpty(s.Trim())));
         }
 
         public static string AddressBuilder(List<string> addressLines, string postalCode)
         {
             addressLines ??= new List<string>();
             addressLines.Add(postalCode);
-            return string.Join(", ", addressLines.Where(s => !string.IsNullOrEmpty(s)));
+            return string.Join(", ", addressLines.Where(s => !string.IsNullOrEmpty(s.Trim())));
         }
     }
 }
