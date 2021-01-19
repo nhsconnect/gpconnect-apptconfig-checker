@@ -1,4 +1,5 @@
 ﻿@page
+@model IndexModel
 @using gpconnect_appointment_checker.Helpers.Constants
 @addTagHelper *, gpconnect-appointment-checker
 
@@ -9,7 +10,7 @@
             {
                 <h3 class="nhsuk-warning-callout__label">@SearchConstants.ACCESSLABEL</h3>
                 <p>@SearchConstants.ACCESSTEXTALT</p>
-                <a asp-action="Login" asp-controller="Auth" class="nhsuk-button">@SearchConstants.SIGNINBUTTONTEXT</a>
+                @Html.ActionLink(SearchConstants.SIGNINBUTTONTEXT, "Login", "Auth", null, new { @class = "nhsuk-button" })
             }
             else
             {

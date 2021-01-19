@@ -10,5 +10,6 @@
         public string token_endpoint { get; set; }
         public string challenge_scheme { get; set; }
         public string metadata_endpoint { get; set; }
+        public string signed_out_callback_path { get; set; }
     }
 }

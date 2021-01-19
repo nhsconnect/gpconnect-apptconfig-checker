@@ -109,7 +109,6 @@ namespace gpconnect_appointment_checker.Pages
                     //LDAP Query 4 - Get the endpoint and party key for the Consumer ODS Code
                     var consumerGpConnectDetails = _ldapService.GetGpProviderEndpointAndPartyKeyByOdsCode(ConsumerODSCode);
 
-                    ProviderPublisher = providerGpConnectDetails.product_name;
                     ProviderEnabledForGpConnectAppointmentManagement = providerGpConnectDetails != null;
 
                     if (ProviderEnabledForGpConnectAppointmentManagement && consumerOrganisationDetails != null)
@@ -120,6 +119,7 @@ namespace gpconnect_appointment_checker.Pages
 
                         if (ProviderASIDPresent)
                         {
+                            ProviderPublisher = providerAsId.product_name;
                             providerGpConnectDetails.asid = providerAsId.asid;
                             await PopulateSearchResults(providerGpConnectDetails, providerOrganisationDetails, consumerGpConnectDetails, consumerOrganisationDetails);
                             SearchAtResultsText = $"{providerOrganisationDetails.OrganisationName} ({providerOrganisationDetails.ODSCode}) - {StringExtensions.AddressBuilder(providerOrganisationDetails.PostalAddressFields.ToList(), providerOrganisationDetails.PostalCode)}";

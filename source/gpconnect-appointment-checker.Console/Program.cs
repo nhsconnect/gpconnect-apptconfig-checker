@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
+using System.Threading.Tasks;
 
 namespace gpconnect_appointment_checker.Console
 {
@@ -60,59 +61,71 @@ namespace gpconnect_appointment_checker.Console
             }
         }
 
-        private static void RunLdapQueries(int numberOfGoes)
+        private static async Task RunLdapQueries(int numberOfGoes)
         {
-            string[] odsCodes = { "A20047", "X26", "J82132", "B82619", "B82617", "B82614", "J82132", "RR8" };
+            var odsCodes = new List<string> { "A20047", "X26", "J82132", "B82619", "B82617", "B82614", "RR8" };
+
             var query = _ldapQueries.FirstOrDefault(x => x.query_name == "GetOrganisationDetailsByOdsCode");
 
             for (var i = 0; i < numberOfGoes; i++)
             {
-                for (var j = 0; j < odsCodes.Length; j++)
+                var results = new List<Dictionary<string, object>>();
+
+                using (LdapConnection ldapConnection = new LdapConnection())
                 {
-                    var filter = query.query_text.Replace("{odsCode}", odsCodes[j]);
-                    var results = new Dictionary<string, object>();
+                    ldapConnection.SecureSocketLayer = _spineConfiguration.sds_use_ldaps;
+                    ldapConnection.ConnectionTimeout = _spineConfiguration.timeout_seconds * 1000;
 
-                    using (LdapConnection ldapConnection = new LdapConnection())
+                    if (_spineConfiguration.sds_use_mutualauth)
                     {
-                        ldapConnection.SecureSocketLayer = _spineConfiguration.sds_use_ldaps;
-                        ldapConnection.ConnectionTimeout = _spineConfiguration.timeout_seconds * 1000;
+                        System.Console.WriteLine("Using Mutual Auth");
 
-                        if (_spineConfiguration.sds_use_mutualauth)
-                        {
-                            System.Console.WriteLine("Using Mutual Auth");
+                        var clientCertData = CertificateHelper.ExtractCertInstances(_spineConfiguration.client_cert);
+                        var clientPrivateKeyData = CertificateHelper.ExtractKeyInstance(_spineConfiguration.client_private_key);
+                        var x509ClientCertificate = new X509Certificate2(clientCertData.FirstOrDefault());
 
-                            var clientCertData = CertificateHelper.ExtractCertInstances(_spineConfiguration.client_cert);
-                            var clientPrivateKeyData = CertificateHelper.ExtractKeyInstance(_spineConfiguration.client_private_key);
-                            var x509ClientCertificate = new X509Certificate2(clientCertData.FirstOrDefault());
+                        var privateKey = RSA.Create();
+                        privateKey.ImportRSAPrivateKey(clientPrivateKeyData, out _);
+                        var x509CertificateWithPrivateKey = x509ClientCertificate.CopyWithPrivateKey(privateKey);
+                        var pfxFormattedCertificate = new X509Certificate(x509CertificateWithPrivateKey.Export(X509ContentType.Pfx, string.Empty), string.Empty);
 
-                            var privateKey = RSA.Create();
-                            privateKey.ImportRSAPrivateKey(clientPrivateKeyData, out _);
-                            var x509CertificateWithPrivateKey = x509ClientCertificate.CopyWithPrivateKey(privateKey);
-                            var pfxFormattedCertificate = new X509Certificate(x509CertificateWithPrivateKey.Export(X509ContentType.Pfx, string.Empty), string.Empty);
+                        _clientCertificate = pfxFormattedCertificate;
 
-                            _clientCertificate = pfxFormattedCertificate;
-
-                            ldapConnection.UserDefinedServerCertValidationDelegate += ValidateServerCertificate;
-                            ldapConnection.UserDefinedClientCertSelectionDelegate += SelectLocalCertificate;
-                        }
-
-                        ldapConnection.Connect(_spineConfiguration.sds_hostname, _spineConfiguration.sds_port);
-                        var searchResults = ldapConnection.Search(query.search_base, LdapConnection.ScopeSub, filter, null, false);
-
-                        while (searchResults.HasMore())
-                        {
-                            var nextEntry = searchResults.Next();
-                            var attributeSet = nextEntry.GetAttributeSet();
-
-                            foreach (var attribute in attributeSet)
-                            {
-                                results.TryAdd(attribute.Name, attribute.StringValue);
-                            }
-                        }
+                        ldapConnection.UserDefinedServerCertValidationDelegate += ValidateServerCertificate;
+                        ldapConnection.UserDefinedClientCertSelectionDelegate += SelectLocalCertificate;
                     }
-                    System.Console.WriteLine($"For query {filter} - iteration {i + 1}, result count is {results.Count}");
+
+                    ldapConnection.Connect(_spineConfiguration.sds_hostname, _spineConfiguration.sds_port);
+
+                    var batchSize = 5;
+                    int numberOfBatches = (int)Math.Ceiling((double)odsCodes.Count / batchSize);
+
+                    for (int j = 0; j < numberOfBatches; j++)
+                    {
+                        var currentOdsCodes = odsCodes.Skip(i * batchSize).Take(batchSize);
+                        var tasks = currentOdsCodes.Select(odsCode => RunSearch(ldapConnection, query.search_base, query.query_text.Replace("{odsCode}", odsCode), query.query_attributes));
+                        //results.AddRange(await Task.WhenAll(tasks));
+                    }
+                }
+                //System.Console.WriteLine($"For query {filter} - iteration {i + 1}, result count is {results.Count}");
+            }
+        }
+
+        private static Dictionary<string, object> RunSearch(LdapConnection ldapConnection, string searchBase, string queryText, string[] queryAttributes)
+        {
+            var results = new Dictionary<string, object>();
+            var searchResults = ldapConnection.Search(searchBase, LdapConnection.ScopeSub, queryText, queryAttributes, false);
+            while (searchResults.HasMore())
+            {
+                var nextEntry = searchResults.Next();
+                var attributeSet = nextEntry.GetAttributeSet();
+
+                foreach (var attribute in attributeSet)
+                {
+                    results.TryAdd(attribute.Name, attribute.StringValue);
                 }
             }
+            return results;
         }
 
         private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
@@ -146,7 +159,8 @@ namespace gpconnect_appointment_checker.Console
                     {
                         query_name = reader.GetString("query_name"),
                         search_base = reader.GetString("search_base"),
-                        query_text = reader.GetString("query_text")
+                        query_text = reader.GetString("query_text"),
+                        query_attributes = new[] { reader.GetString("query_attributes") }
                     });
                 }
 
@@ -183,7 +197,8 @@ namespace gpconnect_appointment_checker.Console
                         client_cert = reader.GetNullableString("client_cert"),
                         client_private_key = reader.GetNullableString("client_private_key"),
                         server_ca_certchain = reader.GetNullableString("server_ca_certchain"),
-                        sds_use_mutualauth = reader.GetBoolean("sds_use_mutualauth")
+                        sds_use_mutualauth = reader.GetBoolean("sds_use_mutualauth"),
+                        spine_fqdn = reader.GetString("spine_fqdn")
                     };
                 }
 
@@ -209,6 +224,7 @@ namespace gpconnect_appointment_checker.Console
         public string query_name { get; set; }
         public string search_base { get; set; }
         public string query_text { get; set; }
+        public string[] query_attributes { get; set; }
     }
 
     public class SpineConfiguration
@@ -225,6 +241,7 @@ namespace gpconnect_appointment_checker.Console
         public string client_cert { get; set; }
         public string client_private_key { get; set; }
         public string server_ca_certchain { get; set; }
+        public string spine_fqdn { get; set; }
         public bool sds_use_mutualauth { get; set; }
     }
 }

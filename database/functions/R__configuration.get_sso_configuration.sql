@@ -10,7 +10,8 @@ returns table
     challenge_scheme varchar(100),
     auth_endpoint varchar(1000),
     token_endpoint varchar(1000),
-    metadata_endpoint varchar(1000)
+    metadata_endpoint varchar(1000),
+    signed_out_callback_path varchar(1000)
 )
 as $$
 begin
@@ -24,9 +25,8 @@ begin
 	    s.challenge_scheme,
 	    s.auth_endpoint,
 	    s.token_endpoint,
-	    s.metadata_endpoint
-   	from configuration.sso s;
-	
+	    s.metadata_endpoint,
+	    s.signed_out_callback_path
+   	from configuration.sso s;	
 end;
 $$ language plpgsql;
-

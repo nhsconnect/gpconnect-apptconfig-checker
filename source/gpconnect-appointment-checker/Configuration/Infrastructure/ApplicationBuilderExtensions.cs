@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -43,10 +44,12 @@ namespace gpconnect_appointment_checker.Configuration.Infrastructure
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedProto
             });
-
+            
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseMiddleware<RequestLoggingMiddleware>();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

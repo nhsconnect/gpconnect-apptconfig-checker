@@ -6,11 +6,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 
 namespace gpconnect_appointment_checker.Controllers
 {
-    [Route("[controller]/[action]")]
     public class AuthController : Controller
     {
         private readonly IApplicationService _applicationService;
@@ -24,40 +27,43 @@ namespace gpconnect_appointment_checker.Controllers
             _logger = logger;
         }
 
-        [HttpGet("/Auth/Login")]
+        [Route("/Auth/Login")]
+        [AllowAnonymous]
         public async Task Login(string returnUrl = "/")
         {
-            await HttpContext.ChallengeAsync("OpenIdConnect", new AuthenticationProperties
+            await HttpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
                 RedirectUri = returnUrl
             });
         }
 
-        public IActionResult Signout()
+        [Route("/Auth/Logout")]
+        public async Task<IActionResult> Logout()
         {
-            var signOutResult = new SignOutResult();
-            var userSessionId = _contextAccessor.HttpContext.User.GetClaimValue("UserSessionId").StringToInteger(0);
+            var userSessionId = _contextAccessor.HttpContext?.User.GetClaimValue("UserSessionId").StringToInteger(0);
             try
             {
-                if (userSessionId > 0)
+                if (userSessionId.HasValue && userSessionId.Value > 0)
                 {
                     _applicationService.LogoffUser(new User
                     {
                         EmailAddress = _contextAccessor.HttpContext.User.GetClaimValue("Email"),
-                        UserSessionId = userSessionId
+                        UserSessionId = userSessionId.Value
                     });
                 }
+
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
+                {
+                    RedirectUri = "~/"
+                });
+                return Redirect("~/");
             }
             catch (Exception exc)
             {
                 _logger.LogError("An error occurred in trying to logout the user", exc);
                 throw;
             }
-            finally
-            {
-                signOutResult = SignOut(new AuthenticationProperties { RedirectUri = "/" }, "Cookies", "OpenIdConnect");
-            }
-            return signOutResult;
         }
     }
 }
