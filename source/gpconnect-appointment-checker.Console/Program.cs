@@ -128,12 +128,29 @@ namespace gpconnect_appointment_checker.Console
             return results;
         }
 
-        private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+
+
+        private static bool ValidateServerCertificateChain(object sender, X509Certificate pfxFormattedCertificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             if (sslPolicyErrors == SslPolicyErrors.None)
                 return true;
             System.Console.WriteLine("Certificate error: {0}", sslPolicyErrors);
-            return true;
+
+            var serverCert = _spineConfiguration.server_ca_certchain;
+            var serverCertData = CertificateHelper.ExtractCertInstances(serverCert);
+            var x509ServerCertificateSubCa = new X509Certificate2(serverCertData[0]);
+            var x509ServerCertificateRootCa = new X509Certificate2(serverCertData[1]);
+
+            chain.Reset();
+            chain.ChainPolicy.VerificationFlags = X509VerificationFlags.IgnoreRootRevocationUnknown;
+            chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
+            chain.ChainPolicy.ExtraStore.Add(x509ServerCertificateSubCa);
+            chain.ChainPolicy.ExtraStore.Add(x509ServerCertificateRootCa);
+
+            //if (chain.Build(pfxFormattedCertificate)) return true;
+            if (chain.ChainStatus.Where(chainStatus => chainStatus.Status != X509ChainStatusFlags.NoError).All(chainStatus => chainStatus.Status != X509ChainStatusFlags.UntrustedRoot)) return false;
+            var providedRoot = chain.ChainElements[^1];
+            return x509ServerCertificateRootCa.Thumbprint == providedRoot.Certificate.Thumbprint;
         }
 
         private static X509Certificate SelectLocalCertificate(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
