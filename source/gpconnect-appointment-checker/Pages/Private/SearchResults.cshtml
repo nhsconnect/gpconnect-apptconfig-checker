@@ -31,10 +31,16 @@
                 {
                     <h4>
                         @firstLocation.LocationName<br />
-                        @StringExtensions.AddressBuilder(firstLocation.LocationAddressLines, firstLocation.LocationDistrict, firstLocation.LocationCity, firstLocation.LocationPostalCode, firstLocation.LocationCountry)
+                        @if (!firstLocation.NoAddressProvided)
+                        {
+                            @StringExtensions.AddressBuilder(firstLocation.LocationAddressLines, firstLocation.LocationDistrict, firstLocation.LocationCity, firstLocation.LocationPostalCode, firstLocation.LocationCountry)
+                        }
+                        else
+                        {
+                            <em>@SearchConstants.SEARCHRESULTSNOADDRESSPROVIDEDTEXT</em>
+                        }
                     </h4>
                 }
-
                 <div class="nhsuk-table__panel-with-heading-tab">
                     <table role="table" class="nhsuk-table-responsive">
                         <caption class="nhsuk-table__caption nhsuk-u-visually-hidden">@SearchConstants.SEARCHRESULTSAVAILABLEAPPOINTMENTSLOTSTEXT</caption>

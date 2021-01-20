@@ -14,12 +14,12 @@ namespace gpconnect_appointment_checker.Pages
         public List<List<SlotEntrySimple>> SearchResults { get; set; }
 
         [Required(ErrorMessage = SearchConstants.PROVIDERODSCODEREQUIREDERRORMESSAGE)]
-        [RegularExpression(@"^[a-zA-Z0-9 ]*$", ErrorMessage = SearchConstants.PROVIDERODSCODEVALIDERRORMESSAGE)]
+        [RegularExpression(@"^\s*[a-zA-Z0-9]*\s*$", ErrorMessage = SearchConstants.PROVIDERODSCODEVALIDERRORMESSAGE)]
         [BindProperty]
         public string ProviderODSCode { get; set; }
 
         [Required(ErrorMessage = SearchConstants.CONSUMERODSCODEREQUIREDERRORMESSAGE)]
-        [RegularExpression(@"^[a-zA-Z0-9 ]*$", ErrorMessage = SearchConstants.CONSUMERODSCODEVALIDERRORMESSAGE)]
+        [RegularExpression(@"^\s*[a-zA-Z0-9]*\s*$", ErrorMessage = SearchConstants.CONSUMERODSCODEVALIDERRORMESSAGE)]
         [BindProperty]
         public string ConsumerODSCode { get; set; }
 
