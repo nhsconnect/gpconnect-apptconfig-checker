@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using gpconnect_appointment_checker.Helpers.Constants;
 
 namespace gpconnect_appointment_checker.Helpers
 {
@@ -21,7 +22,7 @@ namespace gpconnect_appointment_checker.Helpers
 
         public static string StripNonAlphanumericCharacters(this string input)
         {
-            var regex = new Regex("[^a-zA-Z0-9]");
+            var regex = new Regex(ValidationConstants.ALPHANUMERICCHARACTERSONLY);
             return regex.Replace(input, string.Empty).Trim();
         }
 

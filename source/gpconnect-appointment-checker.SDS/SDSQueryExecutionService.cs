@@ -59,8 +59,6 @@ namespace gpconnect_appointment_checker.SDS
 
                     if (useSdsMutualAuth)
                     {
-                        _logger.LogInformation($"UseSdsMutualAuth: On");
-
                         var clientCert = _configuration.GetSection("spine:client_cert").GetConfigurationString();
                         var serverCert = _configuration.GetSection("spine:server_ca_certchain").GetConfigurationString();
                         var clientPrivateKey = _configuration.GetSection("spine:client_private_key").GetConfigurationString();
@@ -83,16 +81,8 @@ namespace gpconnect_appointment_checker.SDS
                     var hostName = _configuration.GetSection("Spine:sds_hostname").Value;
                     var hostPort = int.Parse(_configuration.GetSection("Spine:sds_port").Value);
 
-                    _logger.LogInformation("Establishing connection with the LDAP server");
-                    _logger.LogInformation($"Host: {hostName}");
-                    _logger.LogInformation($"Port: {hostPort}");
-
                     ldapConnection.Connect(hostName, hostPort);
                     ldapConnection.Bind(string.Empty, string.Empty);
-
-                    _logger.LogInformation("Commencing search");
-                    _logger.LogInformation($"searchBase is: {searchBase}");
-                    _logger.LogInformation($"filter is: {filter}");
 
                     var searchResults = ldapConnection.Search(searchBase, LdapConnection.ScopeSub, filter, attributes, false);
 
@@ -109,8 +99,6 @@ namespace gpconnect_appointment_checker.SDS
 
                     ldapConnection.Disconnect();
                     ldapConnection.Dispose();
-
-                    _logger.LogInformation("Search has been executed.");
                 }
 
                 var jsonDictionary = JsonConvert.SerializeObject(results);
@@ -127,7 +115,6 @@ namespace gpconnect_appointment_checker.SDS
             catch (LdapException ldapException)
             {
                 _logger.LogError("An LdapException has occurred while attempting to execute an LDAP query", ldapException);
-                _logger.LogError($"EXCEPTION: {ldapException}");
                 throw;
             }
             catch (Exception exc)
@@ -137,49 +124,16 @@ namespace gpconnect_appointment_checker.SDS
             }
         }
 
-        private static X509Certificate ValidateClientCertificateSelection(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
-        {
-            _logger.LogInformation($"Certificate in collection count is {localCertificates.Count}");
-            foreach (var certificate in localCertificates)
-            {
-                _logger.LogInformation($"Certificate in collection - subject is {certificate.Subject}");
-                _logger.LogInformation($"Certificate in collection - issuer is {certificate.Issuer}");
-            }
-
-            _logger.LogInformation($"Remove Certificate - subject is {remoteCertificate.Subject}");
-            _logger.LogInformation($"Remove Certificate - subject is {remoteCertificate.Issuer}");
-
-            return remoteCertificate;
-        }
-
         private static bool ValidateServerCertificate(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
         {
             if (sslPolicyErrors == SslPolicyErrors.None)
                 return true;
-            _logger.LogInformation("Certificate error: {0}", sslPolicyErrors);
+            _logger.LogError($"An error has occurred while attempting to validate the LDAP server certificate: {sslPolicyErrors}");
             return false;
-        }
-
-        private static bool ValidateServerCertificateChain(X509Chain chain, X509Certificate2 x509ServerCertificateSubCa,
-            X509Certificate2 x509ServerCertificateRootCa, X509Certificate2 pfxFormattedCertificate)
-        {
-            chain.Reset();
-            chain.ChainPolicy.VerificationFlags = X509VerificationFlags.IgnoreRootRevocationUnknown;
-            chain.ChainPolicy.RevocationMode = X509RevocationMode.Online;
-            chain.ChainPolicy.ExtraStore.Add(x509ServerCertificateSubCa);
-            chain.ChainPolicy.ExtraStore.Add(x509ServerCertificateRootCa);
-
-            if (chain.Build(pfxFormattedCertificate)) return true;
-            if (chain.ChainStatus.Where(chainStatus => chainStatus.Status != X509ChainStatusFlags.NoError).All(chainStatus => chainStatus.Status != X509ChainStatusFlags.UntrustedRoot)) return false;
-            var providedRoot = chain.ChainElements[^1];
-            return x509ServerCertificateRootCa.Thumbprint == providedRoot.Certificate.Thumbprint;
         }
 
         private static X509Certificate SelectLocalCertificate(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
         {
-            _logger.LogInformation("Client is selecting a local certificate.");
-            _logger.LogInformation($"Client Cert subject is {_clientCertificate.Subject}");
-            _logger.LogInformation($"Client Cert issuer is {_clientCertificate.Issuer}");
             return _clientCertificate;
         }
     }
