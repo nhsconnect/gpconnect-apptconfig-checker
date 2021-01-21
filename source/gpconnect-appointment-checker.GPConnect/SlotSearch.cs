@@ -155,14 +155,14 @@ namespace gpconnect_appointment_checker.GPConnect
             startDate = RecalculateStartDate(startDate, includePastSlots);
             var uriBuilder = new UriBuilder(requestUri.ToString());
             var query = HttpUtility.ParseQueryString(uriBuilder.Query);
-            query.Add("status", "free");
-            query.Add("_include", "Slot:schedule");
-            query.Add("_include:recurse", "Schedule:actor:Practitioner");
-            query.Add("_include:recurse", "Schedule:actor:Location");
-            query.Add("_include:recurse", "Location:managingOrganization");
-            query.Add("start", $"ge{startDate:yyyy-MM-ddThh:mm:sszzzz}");
-            query.Add("end", $"le{endDate:yyyy-MM-ddThh:mm:sszzzz}");
-            query.Add("searchFilter", $"https://fhir.nhs.uk/Id/ods-organization-code|{requestParameters.ConsumerODSCode}");
+            query.Add(Uri.EscapeDataString("status"), "free");
+            query.Add(Uri.EscapeDataString("_include"), "Slot:schedule");
+            query.Add(Uri.EscapeDataString("_include:recurse"), "Schedule:actor:Practitioner");
+            query.Add(Uri.EscapeDataString("_include:recurse"), "Schedule:actor:Location");
+            query.Add(Uri.EscapeDataString("_include:recurse"), "Location:managingOrganization");
+            query.Add(Uri.EscapeDataString("start"), $"ge{startDate:yyyy-MM-ddThh:mm:sszzzz}");
+            query.Add(Uri.EscapeDataString("end"), $"le{endDate:yyyy-MM-ddThh:mm:sszzzz}");
+            query.Add(Uri.EscapeDataString("searchFilter"), $"https://fhir.nhs.uk/Id/ods-organization-code|{requestParameters.ConsumerODSCode}");
             uriBuilder.Query = query.ToString();
             return uriBuilder;
         }
