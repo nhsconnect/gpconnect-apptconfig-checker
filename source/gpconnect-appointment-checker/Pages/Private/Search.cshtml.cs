@@ -62,10 +62,11 @@ namespace gpconnect_appointment_checker.Pages
 
         public async Task<IActionResult> OnPostSearchAsync()
         {
-            ProviderODSCode = ProviderODSCode.ToUpper();
-            ConsumerODSCode = ConsumerODSCode.ToUpper();
             if (ModelState.IsValid)
             {
+                
+                ProviderODSCode = ProviderODSCode.ToUpper().StripNonAlphanumericCharacters();
+                ConsumerODSCode = ConsumerODSCode.ToUpper().StripNonAlphanumericCharacters();
                 _stopwatch.Start();
                 await GetSearchResults();
                 _stopwatch.Stop();

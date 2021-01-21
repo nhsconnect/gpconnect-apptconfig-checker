@@ -182,8 +182,8 @@ namespace gpconnect_appointment_checker.GPConnect
             {
                 Item1 = auditSearchParameters[0],
                 Item2 = auditSearchParameters[1],
-                Item3 = auditSearchParameters[2],
-                Details = auditSearchIssues.Count > 0 ? string.Join((char)10, auditSearchIssues) : resultCount.ToString(),
+                Item3 = auditSearchParameters[2].Replace(":", " "),
+                Details = auditSearchIssues.Count > 0 ? string.Join((char)10, auditSearchIssues) : $"{resultCount} free slot(s) returned",
                 EntryElapsedMs = Convert.ToInt32(stopWatch.ElapsedMilliseconds),
                 EntryTypeId = (int)AuditEntryTypes.SlotSearch
             };
