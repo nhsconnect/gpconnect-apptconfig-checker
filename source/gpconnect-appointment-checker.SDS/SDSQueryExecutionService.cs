@@ -129,7 +129,7 @@ namespace gpconnect_appointment_checker.SDS
             if (sslPolicyErrors == SslPolicyErrors.None)
                 return true;
             _logger.LogError($"An error has occurred while attempting to validate the LDAP server certificate: {sslPolicyErrors}");
-            return false;
+            return true;
         }
 
         private static X509Certificate SelectLocalCertificate(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
