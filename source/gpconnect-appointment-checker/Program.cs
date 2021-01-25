@@ -60,9 +60,6 @@ namespace gpconnect_appointment_checker
                     {
                         options.AddServerHeader = false;
                     });
-                }).ConfigureAppConfiguration((builderContext, config) =>
-                {
-                    config.AddEnvironmentVariables(prefix: "GPCONNECTAPPOINTMENTCHECKER_");
                 }).ConfigureAppConfiguration(AddCustomConfiguration)
                 .ConfigureLogging((builderContext, logging) =>
                 {
@@ -72,7 +69,10 @@ namespace gpconnect_appointment_checker
 
         private static void AddCustomConfiguration(HostBuilderContext context, IConfigurationBuilder builder)
         {
-            var configuration = builder.Build();
+            builder.AddEnvironmentVariables("GPCONNECTAPPOINTMENTCHECKER_");
+            builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+            builder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true);
+            var configuration = builder.Build();            
             builder.AddConfiguration(options =>
             {
                 options.ConnectionString = configuration.GetConnectionString("DefaultConnection");
