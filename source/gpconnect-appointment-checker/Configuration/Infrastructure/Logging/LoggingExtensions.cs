@@ -1,11 +1,18 @@
-﻿using gpconnect_appointment_checker.Helpers;
+﻿using gpconnect_appointment_checker.DTO.Response.Infrastructure;
+using gpconnect_appointment_checker.Helpers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NLog;
+using NLog.Config;
 using NLog.Layouts;
 using NLog.Targets;
+using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Linq;
+using System.Net.Http;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace gpconnect_appointment_checker.Configuration.Infrastructure
 {
@@ -24,7 +31,7 @@ namespace gpconnect_appointment_checker.Configuration.Infrastructure
             nLogConfiguration.AddTarget(consoleTarget);
             nLogConfiguration.AddTarget(databaseTarget);
 
-            nLogConfiguration.Variables.Add("applicationVersion", ApplicationHelper.ApplicationVersion.GetAssemblyVersion);
+            AddApplicationVersionInfo(nLogConfiguration);
             nLogConfiguration.Variables.Add("userId", null);
             nLogConfiguration.Variables.Add("userSessionId", null);
 
@@ -37,6 +44,36 @@ namespace gpconnect_appointment_checker.Configuration.Infrastructure
             });
 
             return services;
+        }
+
+        private static void AddApplicationVersionInfo(LoggingConfiguration nLogConfiguration)
+        {
+            var imageTag = string.Empty;
+            try
+            {
+                using (var httpClient = new HttpClient())
+                {
+                    var builder = new UriBuilder("http://host.docker.internal:2375/containers/json")
+                    {
+                        Query = "filters=" + Uri.EscapeDataString("{\"id\":[\"" + Environment.MachineName + "\"]}")
+                    };
+                    var response = httpClient.GetAsync(builder.Uri).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        var responseStream = response.Content.ReadAsStringAsync().Result;
+                        var containerList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Container>>(responseStream);
+                        var containerImage = containerList.FirstOrDefault()?.Image;
+                        imageTag = containerImage != null && containerImage.Contains(":")
+                            ? containerImage.Split(":")[1]
+                            : containerImage;
+                    }
+                }
+            }
+            catch (Exception exc)
+            {
+                Console.WriteLine(exc.StackTrace);
+            }
+            nLogConfiguration.Variables.Add("applicationVersion", $"[{imageTag}] {ApplicationHelper.ApplicationVersion.GetAssemblyVersion}");
         }
 
         private static DatabaseTarget AddDatabaseTarget(IConfiguration configuration)

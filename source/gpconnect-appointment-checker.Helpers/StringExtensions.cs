@@ -32,7 +32,7 @@ namespace gpconnect_appointment_checker.Helpers
             addressLines.Add(city);
             addressLines.Add(postalCode);
             addressLines.Add(country);
-            return string.Join(", ", addressLines.Where(s => !string.IsNullOrEmpty(s.Trim())));
+            return string.Join(", ", addressLines.Where(s => !string.IsNullOrEmpty(s)));
         }
 
         public static string AddressBuilder(List<string> addressLines, string postalCode)
