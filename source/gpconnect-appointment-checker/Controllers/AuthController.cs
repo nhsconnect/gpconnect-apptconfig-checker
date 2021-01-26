@@ -2,6 +2,9 @@
 using gpconnect_appointment_checker.DTO.Request.Application;
 using gpconnect_appointment_checker.Helpers;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -33,7 +36,8 @@ namespace gpconnect_appointment_checker.Controllers
         {
             await HttpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
-                RedirectUri = returnUrl
+                RedirectUri = returnUrl,
+                ExpiresUtc = DateTimeOffset.Now.AddMinutes(2)
             });
         }
 

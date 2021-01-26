@@ -27,6 +27,7 @@ begin
 	    s.token_endpoint,
 	    s.metadata_endpoint,
 	    s.signed_out_callback_path
-   	from configuration.sso s;	
+   	from configuration.sso s;
+	
 end;
 $$ language plpgsql;
