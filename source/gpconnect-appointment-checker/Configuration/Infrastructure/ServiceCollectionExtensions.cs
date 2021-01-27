@@ -21,7 +21,9 @@ namespace gpconnect_appointment_checker.Configuration.Infrastructure
             services.AddSession(s =>
             {
                 s.Cookie.Name = ".GpConnectAppointmentChecker.Session";
-                s.IdleTimeout = new TimeSpan(0, 30, 0);
+
+                s.IdleTimeout = new System.TimeSpan(0, 30, 0);
+
                 s.Cookie.HttpOnly = false;
                 s.Cookie.IsEssential = true;
             });

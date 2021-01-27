@@ -1,4 +1,6 @@
-create or replace function caching.delete_cache_item
+drop function if exists caching.delete_cache_item;
+
+create function caching.delete_cache_item
 (
 	_dist_cache_id text
 )

@@ -36,7 +36,8 @@ namespace gpconnect_appointment_checker.DTO.Response.GpConnect
             return false;
         }
 
-        public bool NoAddressProvided => LocationAddressLines?.Count == 0 && string.IsNullOrEmpty(LocationCity) &&
+        public bool NoAddressProvided => (LocationAddressLines == null || LocationAddressLines?.Count == 0)
+                                         && string.IsNullOrEmpty(LocationCity) &&
                                          string.IsNullOrEmpty(LocationDistrict) &&
                                          string.IsNullOrEmpty(LocationPostalCode) &&
                                          string.IsNullOrEmpty(LocationCountry);

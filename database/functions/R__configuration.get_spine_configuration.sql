@@ -1,4 +1,6 @@
-create or replace function configuration.get_spine_configuration
+drop function if exists configuration.get_spine_configuration;
+
+create function configuration.get_spine_configuration
 (
 )
 returns table

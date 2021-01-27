@@ -1,4 +1,6 @@
-create or replace function caching.update_cache_item
+drop function if exists caching.update_cache_item;
+
+create function caching.update_cache_item
 (
 	_dist_cache_id text,
 	_utc_now timestamp with time zone

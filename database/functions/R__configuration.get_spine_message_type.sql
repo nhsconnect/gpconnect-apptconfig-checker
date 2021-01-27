@@ -1,4 +1,6 @@
-create or replace function configuration.get_spine_message_type
+drop function if exists configuration.get_spine_message_type;
+
+create function configuration.get_spine_message_type
 (
 )
 returns table

@@ -1,4 +1,6 @@
-create or replace function logging.log_spine_message
+drop function if exists logging.log_spine_message;
+
+create function logging.log_spine_message
 (
     _user_session_id integer,
     _spine_message_type_id integer,

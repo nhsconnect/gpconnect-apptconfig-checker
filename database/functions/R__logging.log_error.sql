@@ -1,4 +1,6 @@
-create or replace function logging.log_error
+drop function if exists logging.log_error;
+
+create function logging.log_error
 (
 	_application varchar(100),
 	_logged timestamp,

@@ -1,4 +1,6 @@
-create or replace function caching.date_diff
+drop function if exists caching.date_diff;
+
+create function caching.date_diff
 (
 	_units character varying,
 	_start_t timestamp with time zone,

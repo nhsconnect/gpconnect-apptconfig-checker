@@ -1,4 +1,6 @@
-create or replace function caching.delete_expired_cache_items
+drop function if exists caching.delete_expired_cache_items;
+
+create function caching.delete_expired_cache_items
 (
 	_utc_now timestamp with time zone
 )

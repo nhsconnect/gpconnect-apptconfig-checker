@@ -1,4 +1,6 @@
-create or replace function configuration.get_sso_configuration
+drop function if exists configuration.get_sso_configuration;
+
+create function configuration.get_sso_configuration
 (
 )
 returns table
@@ -27,6 +29,7 @@ begin
 	    s.token_endpoint,
 	    s.metadata_endpoint,
 	    s.signed_out_callback_path
-   	from configuration.sso s;	
+   	from configuration.sso s;
+	
 end;
 $$ language plpgsql;
