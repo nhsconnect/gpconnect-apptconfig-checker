@@ -1,8 +1,7 @@
 {
   "profiles": {
     "gpconnect-appointment-checker.Console": {
-      "commandName": "Project",
-      "commandLineArgs": "\"Server=localhost;Port=5432;Database=GpConnectAppointmentChecker;User Id=app_user;Password=hYrfbq74%Na$xFIe!QRA;\" 1"
+      "commandName": "Project"
     }
   }
 }
