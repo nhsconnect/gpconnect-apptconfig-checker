@@ -1,4 +1,6 @@
-create or replace function audit.add_entry
+drop function if exists audit.add_entry;
+
+create function audit.add_entry
 (
     _user_id integer,
     _user_session_id integer,

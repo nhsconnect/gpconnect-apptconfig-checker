@@ -1,4 +1,6 @@
-create or replace function configuration.get_general_configuration
+drop function if exists configuration.get_general_configuration;
+
+create function configuration.get_general_configuration
 (
 )
 returns table

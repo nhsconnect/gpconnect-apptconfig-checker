@@ -1,4 +1,6 @@
-create or replace function application.get_organisation
+drop function if exists application.get_organisation;
+
+create function application.get_organisation
 (
 	_ods_code varchar(20)
 )

@@ -1,4 +1,6 @@
-create or replace function logging.purge_logs
+drop function if exists logging.purge_logs;
+
+create function logging.purge_logs
 (
 )
 returns table

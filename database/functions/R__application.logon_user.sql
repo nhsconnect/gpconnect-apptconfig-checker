@@ -1,4 +1,6 @@
-create or replace function application.logon_user
+drop function if exists application.logon_user;
+
+create function application.logon_user
 (
 	_email_address varchar(200),
 	_display_name varchar(200),

@@ -1,4 +1,6 @@
-create or replace function configuration.get_sds_queries
+drop function if exists configuration.get_sds_queries
+
+create function configuration.get_sds_queries
 (
 )
 returns table

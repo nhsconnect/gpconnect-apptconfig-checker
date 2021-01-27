@@ -1,4 +1,6 @@
-create or replace function application.synchronise_organisation
+drop function if exists application.synchronise_organisation;
+
+create function application.synchronise_organisation
 (
 	_ods_code varchar(10),
 	_organisation_type_name varchar(200),

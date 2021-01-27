@@ -1,4 +1,6 @@
-create or replace function application.set_user_isauthorised
+drop function if exists application.set_user_isauthorised;
+
+create function application.set_user_isauthorised
 (
 	_email_address varchar(200),
 	_is_authorised boolean

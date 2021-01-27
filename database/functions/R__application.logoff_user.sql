@@ -1,4 +1,6 @@
-create or replace function application.logoff_user
+drop function if exists application.logoff_user;
+
+create function application.logoff_user
 (
 	_email_address varchar(200),
 	_user_session_id integer

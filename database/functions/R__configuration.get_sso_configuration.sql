@@ -1,4 +1,6 @@
-create or replace function configuration.get_sso_configuration
+drop function if exists configuration.get_sso_configuration;
+
+create function configuration.get_sso_configuration
 (
 )
 returns table
