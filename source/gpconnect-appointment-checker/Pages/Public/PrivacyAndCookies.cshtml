@@ -7,36 +7,65 @@
         <h1>Privacy and Cookies</h1>
         <h2>Data Collected</h2>
         <p>
-            We collect anonymous data from every user of @Model.ApplicationName to monitor traffic and fix bugs. For example, we collect the following for a number of reasons:-
+            We collect the following data from every user of @Model.ApplicationName to monitor traffic and fix any issues:-
             <ul>
                 <li>information about web requests including browser information, IP address;</li>
-                <li>data sent in response to such requests.</li>
+                <li>data sent in response to such requests;</li>
+                <li>data about specific appointment searches, including the search parameters entered by the user;</li>
+                <li>tracking when users sign in and sign out, as well as attempts where the user is unauthorised.</li>
             </ul>
         </p>
-        <p>We ask you to log in so that we may save personal information about you, including your name and email address. In order to enable this login based feature, we use cookies to store session information for your convenience. You can block or delete cookies and still be able to use @Model.ApplicationName, although if you do you will then be asked for your username and password every time you log in to @Model.ApplicationName.</p>
+
+        <h3>Personal Data</h3>
+        <p>To use the @Model.ApplicationName you must login with your NHS email address and password. As part of this login process we will save personal information about you, including your name and email address. In order to enable this login-based feature, we use cookies to store session information.</p>
 
         <h2>Data Usage</h2>
         <p>
-            We only use your personal information for the following reasons:-
+            We use the collected data for various purposes in respect to @Model.ApplicationName:-
             <ul>
-                <li>to link activity on @Model.ApplicationName with the information we have stored about you;</li>
-                <li>to communicate with you about your activity on @Model.ApplicationName.</li>
+                <li>to gather analysis or information so that we can make any necessary improvements and changes in functionality;</li>
+                <li>to notify you about changes;</li>
+                <li>to provide technical support in respect of your usage;</li>
+                <li>to provide ongoing maintenance;</li>
+                <li>to monitor the usage via audit information;</li>
+                <li>to detect, prevent and address security and technical issues;</li>
+                <li>for any other purpose which requires your consent.</li>
             </ul>
         </p>
-        <p>
-            We do not share any personal information you have provided to us without your consent, unless:-
-            <ul>
-                <li>doing so is appropriate to carry out your own use of @Model.ApplicationName;</li>
-                <li>we believe it's needed to detect, prevent or address security or technical issues.</li>
-            </ul>
-        </p>
-        <p>We do not share your personal information with third parties.</p>
-        <p>We may use the anonymous data that has been collected pertaining to your use of @Model.ApplicationName to make any necessary improvements and changes in functionality.</p>
+        <p>Where your data is shared with third parties or otherwise, we will seek to share the minimum amount necessary and only with your prior consent.</p>
 
         <h2>Cookies</h2>
         <p>Cookies are small text files that are placed on your computer by websites that you visit. They are widely used in order to make websites work, or work more efficiently, as well as to provide information to the owners of the site.</p>
-        <p>Most browsers automatically accept cookies but have an option for blocking or deleting cookies, which will prevent your browser from accepting new cookies, as well as (depending on the sophistication of your browser software) allow you to decide on acceptance of each new cookie in a variety of ways. You can usually access these options through the "Settings" or similar menu in your browser.  For more information about cookies, including how to see what cookies have been set and how to manage and delete cookies, visit <a target="_blank" href="https://www.allaboutcookies.org/">www.allaboutcookies.org</a>.</p>
-        <p>Essential cookies are required to give you the ability to log into secure areas of @Model.ApplicationName. Disabling these cookies may make certain features and services unavailable.</p>
+        <p>Most browsers automatically accept cookies but have an option for blocking or deleting cookies, which will prevent your browser from accepting new cookies, as well as (depending on the sophistication of your browser software) allow you to decide on acceptance of each new cookie in a variety of ways. You can usually access these options through the "Settings" or similar menu in your browser.</p>
+        <p>For more information about cookies, including how to see what cookies have been set and how to manage and delete cookies, visit <a target="_blank" href="https://www.allaboutcookies.org/">www.allaboutcookies.org</a></p>
+        <p>You can block or delete cookies but it is inadvisable to do so as @Model.ApplicationName relies on some essential cookies to give you the ability to log into the secure areas.</p>
+        <div class="nhsuk-table__panel-with-heading-tab">
+            <h3 class="nhsuk-table__heading-tab">The @Model.ApplicationName creates the following cookies:-</h3>
+            <table class="nhsuk-table">
+                <caption class="nhsuk-table__caption nhsuk-u-visually-hidden">Cookies</caption>
+                <thead role="rowgroup" class="nhsuk-table__head">
+                <tr role="row">
+                    <th role="columnheader" class="" scope="col">Name</th>
+                    <th role="columnheader" class="" scope="col">Purpose</th>
+                </tr>
+                </thead>
+                <tbody class="nhsuk-table__body">
+                <tr role="row" class="nhsuk-table__row" >
+                    <td class="nhsuk-table__cell">.AspNet.Consent</td>
+                    <td class="nhsuk-table__cell ">Stores if the user has understood that cookies are used on the @Model.ApplicationName</td>
+                </tr>
+                <tr role="row" class="nhsuk-table__row" >
+                    <td class="nhsuk-table__cell">.GpConnectAppointmentChecker.Session</td>
+                    <td class="nhsuk-table__cell ">Stores session cookie values</td>
+                </tr>
+                <tr role="row" class="nhsuk-table__row" >
+                    <td class="nhsuk-table__cell">.GpConnectAppointmentChecker.AuthenticationSession</td>
+                    <td class="nhsuk-table__cell ">Stores authentication session cookie values</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
 
         <h2>How to contact us</h2>
         <p>If you have any questions about the privacy and cookie policy, please email us at <a href="mailto:@Html.Raw(Model.GetAccessEmailAddress)">@Model.GetAccessEmailAddress</a></p>
