@@ -1,4 +1,6 @@
-create or replace function caching.set_cache
+drop function if exists caching.set_cache;
+
+create function caching.set_cache
 (
 	_dist_cache_id text,
 	_dist_cache_value bytea,
