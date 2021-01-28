@@ -104,25 +104,32 @@ namespace gpconnect_appointment_checker.Pages
                 if (ProviderODSCodeFound && ConsumerODSCodeFound)
                 {
                     //LDAP Query 3 - Get the endpoint and party key for the Provider ODS Code
-                    var providerGpConnectDetails = _ldapService.GetGpProviderEndpointAndPartyKeyByOdsCode(ProviderODSCode);
+                    var providerGpConnectDetails =
+                        _ldapService.GetGpProviderEndpointAndPartyKeyByOdsCode(ProviderODSCode);
                     //LDAP Query 4 - Get the endpoint and party key for the Consumer ODS Code
-                    var consumerGpConnectDetails = _ldapService.GetGpProviderEndpointAndPartyKeyByOdsCode(ConsumerODSCode);
+                    var consumerGpConnectDetails =
+                        _ldapService.GetGpProviderEndpointAndPartyKeyByOdsCode(ConsumerODSCode);
 
                     ProviderEnabledForGpConnectAppointmentManagement = providerGpConnectDetails != null;
 
                     if (ProviderEnabledForGpConnectAppointmentManagement && consumerOrganisationDetails != null)
                     {
                         //LDAP Query 5 - Get the AsId for the Provider ODS Code to check they are enabled for GP Connect
-                        var providerAsId = _ldapService.GetGpProviderAsIdByOdsCodeAndPartyKey(ProviderODSCode, providerGpConnectDetails.party_key);
+                        var providerAsId =
+                            _ldapService.GetGpProviderAsIdByOdsCodeAndPartyKey(ProviderODSCode,
+                                providerGpConnectDetails.party_key);
                         ProviderASIDPresent = providerAsId != null;
 
                         if (ProviderASIDPresent)
                         {
                             ProviderPublisher = providerAsId.product_name;
                             providerGpConnectDetails.asid = providerAsId.asid;
-                            await PopulateSearchResults(providerGpConnectDetails, providerOrganisationDetails, consumerGpConnectDetails, consumerOrganisationDetails);
-                            SearchAtResultsText = $"{providerOrganisationDetails.OrganisationName} ({providerOrganisationDetails.ODSCode}) - {StringExtensions.AddressBuilder(providerOrganisationDetails.PostalAddressFields.ToList(), providerOrganisationDetails.PostalCode)}";
-                            SearchOnBehalfOfResultsText = $"{consumerOrganisationDetails.OrganisationName} ({consumerOrganisationDetails.ODSCode}) - {StringExtensions.AddressBuilder(consumerOrganisationDetails.PostalAddressFields.ToList(), consumerOrganisationDetails.PostalCode)}";
+                            await PopulateSearchResults(providerGpConnectDetails, providerOrganisationDetails,
+                                consumerGpConnectDetails, consumerOrganisationDetails);
+                            SearchAtResultsText =
+                                $"{providerOrganisationDetails.OrganisationName} ({providerOrganisationDetails.ODSCode}) - {StringExtensions.AddressBuilder(providerOrganisationDetails.PostalAddressFields.ToList(), providerOrganisationDetails.PostalCode)}";
+                            SearchOnBehalfOfResultsText =
+                                $"{consumerOrganisationDetails.OrganisationName} ({consumerOrganisationDetails.ODSCode}) - {StringExtensions.AddressBuilder(consumerOrganisationDetails.PostalAddressFields.ToList(), consumerOrganisationDetails.PostalCode)}";
                         }
                         else
                         {
@@ -131,19 +138,27 @@ namespace gpconnect_appointment_checker.Pages
                     }
                     else
                     {
-                        _auditSearchIssues.Add(string.Format(SearchConstants.ISSUEWITHGPCONNECTPROVIDERNOTENABLEDTEXT, ProviderODSCode));
+                        _auditSearchIssues.Add(string.Format(SearchConstants.ISSUEWITHGPCONNECTPROVIDERNOTENABLEDTEXT,
+                            ProviderODSCode));
                     }
                 }
                 else
                 {
-                    if (!ProviderODSCodeFound) _auditSearchIssues.Add(string.Format(SearchConstants.ISSUEWITHPROVIDERODSCODETEXT, ProviderODSCode));
-                    if (!ConsumerODSCodeFound) _auditSearchIssues.Add(string.Format(SearchConstants.ISSUEWITHCONSUMERODSCODETEXT, ConsumerODSCode));
+                    if (!ProviderODSCodeFound)
+                        _auditSearchIssues.Add(string.Format(SearchConstants.ISSUEWITHPROVIDERODSCODETEXT, ProviderODSCode));
+                    if (!ConsumerODSCodeFound)
+                        _auditSearchIssues.Add(string.Format(SearchConstants.ISSUEWITHCONSUMERODSCODETEXT, ConsumerODSCode));
                 }
             }
             catch (Novell.Directory.Ldap.LdapException)
             {
                 LdapErrorRaised = true;
                 _auditSearchIssues.Add(SearchConstants.ISSUEWITHLDAPTEXT);
+            }
+            catch (TimeoutException)
+            {
+                TimeoutErrorRaised = true;
+                _auditSearchIssues.Add(SearchConstants.ISSUEWITHTIMEOUTTEXT);
             }
         }
 

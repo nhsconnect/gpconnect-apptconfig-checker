@@ -48,6 +48,7 @@ namespace gpconnect_appointment_checker.Pages
         public string ProviderErrorDiagnostics { get; set; }
         public int? SearchResultsCount { get; set; }
         public bool LdapErrorRaised { get; set; }
+        public bool TimeoutErrorRaised { get; set; }
 
         public string ProviderPublisher { get; set; }
     }

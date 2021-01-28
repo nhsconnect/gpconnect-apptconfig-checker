@@ -79,3 +79,14 @@ else if (Model.LdapErrorRaised)
         </div>
     </div>
 }
+else if (Model.TimeoutErrorRaised)
+{
+    <div class="nhsuk-grid-row">
+        <div class="nhsuk-grid-column-full">
+            <div class="nhsuk-warning-callout">
+                <h3 class="nhsuk-warning-callout__label">@SearchConstants.ISSUEWITHTIMEOUTTITLETEXT</h3>
+                <p>@SearchConstants.ISSUEWITHTIMEOUTTEXT</p>
+            </div>
+        </div>
+    </div>
+}
