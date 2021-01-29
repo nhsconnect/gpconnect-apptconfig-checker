@@ -1,19 +1,7 @@
-create schema if not exists caching;
+alter table configuration.sso drop column if exists endsession_endpoint;
 
-drop table if exists caching.dist_cache;
+alter table configuration.sso add column signed_out_callback_path varchar(1000) null;
+update configuration.sso set signed_out_callback_path = '/auth/externallogout';
+alter table configuration.sso alter column signed_out_callback_path set not null;
 
-create table if not exists caching.dist_cache
-(
-    Id text not null,
-    Value bytea,
-    ExpiresAtTime timestamp with time zone,
-    SlidingExpirationInSeconds double precision,
-    AbsoluteExpiration timestamp with time zone,
-
-	constraint caching_distcache_id_pk primary key (Id)
-);
-
-grant usage on schema caching to app_user;
-grant select, insert, update, delete on all tables in schema caching to app_user;
-grant select, update on all sequences in schema caching to app_user;
-grant execute on all functions in schema caching to app_user;
+alter table configuration.sso add constraint configuration_sso_signedoutcallbackpath_ck check (char_length(trim(signed_out_callback_path)) > 0);
