@@ -1,7 +1,19 @@
-update configuration.sds_query 
-set query_attributes = 'nhsMHSEndPoint,nhsMHSPartyKey,uniqueIdentifier' 
-where query_name='GetGpProviderEndpointAndPartyKeyByOdsCode';
+create schema if not exists caching;
 
-update configuration.sds_query 
-set query_attributes = 'nhsMHSPartyKey,uniqueIdentifier,nhsProductName' 
-where query_name='GetGpProviderAsIdByOdsCodeAndPartyKey';
+drop table if exists caching.dist_cache;
+
+create table if not exists caching.dist_cache
+(
+    Id text not null,
+    Value bytea,
+    ExpiresAtTime timestamp with time zone,
+    SlidingExpirationInSeconds double precision,
+    AbsoluteExpiration timestamp with time zone,
+
+	constraint caching_distcache_id_pk primary key (Id)
+);
+
+grant usage on schema caching to app_user;
+grant select, insert, update, delete on all tables in schema caching to app_user;
+grant select, update on all sequences in schema caching to app_user;
+grant execute on all functions in schema caching to app_user;
