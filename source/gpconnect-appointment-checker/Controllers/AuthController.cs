@@ -33,7 +33,7 @@ namespace gpconnect_appointment_checker.Controllers
             await HttpContext.ChallengeAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties()
             {
                 RedirectUri = returnUrl,
-                ExpiresUtc = DateTimeOffset.Now.AddMinutes(2)
+                ExpiresUtc = DateTimeOffset.Now.AddMinutes(30)
             });
         }
 
