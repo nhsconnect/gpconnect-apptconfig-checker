@@ -9,5 +9,5 @@
         @User.GetClaimValue("Email")<br />
         @User.GetClaimValue("ODS")&nbsp;(@User.GetClaimValue("OrganisationName"))
     </div>
-    @Html.ActionLink(@SearchConstants.SIGNOUTBUTTONTEXT, "Logout", "Auth", null, new { @style = "color:#ffffff" })
+    @Html.ActionLink(@SearchConstants.SIGNOUTBUTTONTEXT, "Signout", "Auth", null, new { @style = "color:#ffffff" })
 }

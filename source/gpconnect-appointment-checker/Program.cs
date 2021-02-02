@@ -71,7 +71,6 @@ namespace gpconnect_appointment_checker
         {
             builder.AddEnvironmentVariables("GPCONNECTAPPOINTMENTCHECKER_");
             builder.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
-            builder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true);
             var configuration = builder.Build();            
             builder.AddConfiguration(options =>
             {

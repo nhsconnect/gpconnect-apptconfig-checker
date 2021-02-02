@@ -30,11 +30,11 @@ namespace gpconnect_appointment_checker.DAL
             }
             catch (PostgresException exc)
             {
-                _logger?.LogError(
+                _logger?.LogError(exc,
                     IsDuplicateKeyException(exc)
                         ? $"A duplicate key exception has occurred while attempting to execute the function {schemaName}.{functionName}"
-                        : $"An error has occurred while attempting to execute the function {schemaName}.{functionName}",
-                    exc);
+                        : $"An error has occurred while attempting to execute the function {schemaName}.{functionName}");
+
                 throw;
             }
         }
@@ -49,11 +49,11 @@ namespace gpconnect_appointment_checker.DAL
             }
             catch (PostgresException exc)
             {
-                _logger?.LogError(
+                _logger?.LogError(exc,
                     IsDuplicateKeyException(exc)
                         ? $"A duplicate key exception has occurred while attempting to execute the function {schemaName}.{functionName}"
-                        : $"An error has occurred while attempting to execute the function {schemaName}.{functionName}",
-                    exc);
+                        : $"An error has occurred while attempting to execute the function {schemaName}.{functionName}");
+
                 throw;
             }
         }
@@ -68,11 +68,11 @@ namespace gpconnect_appointment_checker.DAL
             }
             catch (PostgresException exc)
             {
-                _logger?.LogError(
+                _logger?.LogError(exc,
                     IsDuplicateKeyException(exc)
                         ? $"A duplicate key exception has occurred while attempting to execute the function {schemaName}.{functionName}"
-                        : $"An error has occurred while attempting to execute the function {schemaName}.{functionName}",
-                    exc);
+                        : $"An error has occurred while attempting to execute the function {schemaName}.{functionName}");
+
                 throw;
             }
         }

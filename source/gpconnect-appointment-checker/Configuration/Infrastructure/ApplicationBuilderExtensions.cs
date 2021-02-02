@@ -38,14 +38,16 @@ namespace gpconnect_appointment_checker.Configuration.Infrastructure
             {
                 context.Response.GetTypedHeaders().CacheControl = new CacheControlHeaderValue()
                 {
-                    Public = true,
+                    NoStore = true,
                     NoCache = true
                 };
+                context.Response.Headers.Add("Pragma", "no-cache");
+
                 await next();
             });
 
             app.UseResponseCompression();
-            
+
             app.UseAuthentication();
             app.UseAuthorization();
 

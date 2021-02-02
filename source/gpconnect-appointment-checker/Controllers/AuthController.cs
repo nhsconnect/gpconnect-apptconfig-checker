@@ -37,33 +37,27 @@ namespace gpconnect_appointment_checker.Controllers
             });
         }
 
-        [Route("/Auth/Logout")]
-        public async Task<IActionResult> Logout()
+        [Route("/Auth/Signout")]
+        public IActionResult Signout()
         {
-            var userSessionId = _contextAccessor.HttpContext?.User.GetClaimValue("UserSessionId").StringToInteger(0);
+            var userSessionId = _contextAccessor.HttpContext.User.GetClaimValue("UserSessionId").StringToInteger(0);
             try
             {
-                if (userSessionId.HasValue && userSessionId.Value > 0)
+                if (userSessionId > 0)
                 {
                     _applicationService.LogoffUser(new User
                     {
                         EmailAddress = _contextAccessor.HttpContext.User.GetClaimValue("Email"),
-                        UserSessionId = userSessionId.Value
+                        UserSessionId = userSessionId
                     });
                 }
-
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                await HttpContext.SignOutAsync(OpenIdConnectDefaults.AuthenticationScheme, new AuthenticationProperties
-                {
-                    RedirectUri = "~/"
-                });
-                return Redirect("~/");
             }
             catch (Exception exc)
             {
-                _logger.LogError("An error occurred in trying to logout the user", exc);
+                _logger.LogError(exc, "An error occurred in trying to logout the user");
                 throw;
             }
+            return SignOut(CookieAuthenticationDefaults.AuthenticationScheme, OpenIdConnectDefaults.AuthenticationScheme);
         }
     }
 }

@@ -54,7 +54,7 @@ namespace gpconnect_appointment_checker.GPConnect
             }
             catch (Exception exc)
             {
-                _logger.LogError("An error occurred in trying to execute a GET request", exc);
+                _logger.LogError(exc, "An error occurred in trying to execute a GET request");
                 throw;
             }
         }

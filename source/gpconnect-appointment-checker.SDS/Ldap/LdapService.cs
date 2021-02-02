@@ -40,12 +40,12 @@ namespace gpconnect_appointment_checker.SDS
             }
             catch (LdapException ldapException)
             {
-                _logger.LogError("An LdapException error has occurred while attempting to execute an LDAP query", ldapException);
+                _logger.LogError(ldapException, "An LdapException error has occurred while attempting to execute an LDAP query");
                 throw;
             }
             catch (Exception exc)
             {
-                _logger.LogError($"An error has occurred while attempting to execute an LDAP query - filter is {filter} - searchBase is {sdsQuery.SearchBase}", exc);
+                _logger.LogError(exc, $"An error has occurred while attempting to execute an LDAP query - filter is {filter} - searchBase is {sdsQuery.SearchBase}");
                 throw;
             }
         }
@@ -61,12 +61,12 @@ namespace gpconnect_appointment_checker.SDS
             }
             catch (LdapException ldapException)
             {
-                _logger.LogError("An LdapException error has occurred while attempting to execute an LDAP query", ldapException);
+                _logger.LogError(ldapException, "An LdapException error has occurred while attempting to execute an LDAP query");
                 throw;
             }
             catch (Exception exc)
             {
-                _logger.LogError("An error has occurred while attempting to execute an LDAP query", exc);
+                _logger.LogError(exc, "An error has occurred while attempting to execute an LDAP query");
                 throw;
             }
         }
@@ -82,12 +82,12 @@ namespace gpconnect_appointment_checker.SDS
             }
             catch (LdapException ldapException)
             {
-                _logger.LogError("An LdapException error has occurred while attempting to execute an LDAP query", ldapException);
+                _logger.LogError(ldapException, "An LdapException error has occurred while attempting to execute an LDAP query");
                 throw;
             }
             catch (Exception exc)
             {
-                _logger.LogError("An error has occurred while attempting to execute an LDAP query", exc);
+                _logger.LogError(exc, "An error has occurred while attempting to execute an LDAP query");
                 throw;
             }
         }
@@ -101,12 +101,12 @@ namespace gpconnect_appointment_checker.SDS
             }
             catch (LdapException ldapException)
             {
-                _logger.LogError("An LdapException error has occurred while attempting to execute an LDAP query", ldapException);
+                _logger.LogError(ldapException, "An LdapException error has occurred while attempting to execute an LDAP query");
                 throw;
             }
             catch (Exception exc)
             {
-                _logger.LogError("An error has occurred while attempting to load LDAP queries from the database", exc);
+                _logger.LogError(exc, "An error has occurred while attempting to load LDAP queries from the database");
                 throw;
             }
         }

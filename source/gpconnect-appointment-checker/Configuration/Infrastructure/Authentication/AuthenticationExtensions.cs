@@ -40,7 +40,6 @@ namespace gpconnect_appointment_checker.Configuration.Infrastructure.Authenticat
                     options.Authority = configuration.GetSection("SingleSignOn:auth_endpoint").GetConfigurationString(throwExceptionIfEmpty: true);
                     options.MetadataAddress = configuration.GetSection("SingleSignOn:metadata_endpoint").GetConfigurationString(throwExceptionIfEmpty: true);
                     options.MaxAge = TimeSpan.FromMinutes(30);
-                    options.SignedOutRedirectUri = "/Auth/Login";
                     options.SaveTokens = true;
                     options.Scope.Clear();
                     options.Scope.Add("openid");
@@ -52,8 +51,15 @@ namespace gpconnect_appointment_checker.Configuration.Infrastructure.Authenticat
                     options.ClientSecret = configuration.GetSection("SingleSignOn:client_secret").GetConfigurationString(throwExceptionIfEmpty: true);
                     options.CallbackPath = configuration.GetSection("SingleSignOn:callback_path").GetConfigurationString(throwExceptionIfEmpty: true);
                     options.SignedOutCallbackPath = configuration.GetSection("SingleSignOn:signed_out_callback_path").GetConfigurationString(throwExceptionIfEmpty: true);
+
                     options.Events = new OpenIdConnectEvents
                     {
+                        OnSignedOutCallbackRedirect = context =>
+                        {
+                            context.Response.Redirect(context.Options.SignedOutRedirectUri);
+                            context.HandleResponse();
+                            return Task.CompletedTask;
+                        },
                         OnTokenValidated = context =>
                         {
                             var ldapTokenService = new LdapTokenService(services.BuildServiceProvider());

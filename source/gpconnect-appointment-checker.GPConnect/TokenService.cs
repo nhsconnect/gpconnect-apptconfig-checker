@@ -74,7 +74,7 @@ namespace gpconnect_appointment_checker.GPConnect
             }
             catch (Exception exc)
             {
-                _logger.LogError("An error has occurred in trying to build the JWT security token", exc);
+                _logger.LogError(exc, "An error has occurred in trying to build the JWT security token");
                 throw;
             }
         }

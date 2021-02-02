@@ -27,7 +27,7 @@ namespace gpconnect_appointment_checker.Pages
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
             var exceptionHandlerPathFeature =
                 HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-            _logger.LogError($"Timeout error thrown at {exceptionHandlerPathFeature?.Path} - ", exceptionHandlerPathFeature?.Error.InnerException);
+            _logger.LogError(exceptionHandlerPathFeature?.Error.InnerException, $"Timeout error thrown at {exceptionHandlerPathFeature?.Path} - ");
         }
     }
 }
