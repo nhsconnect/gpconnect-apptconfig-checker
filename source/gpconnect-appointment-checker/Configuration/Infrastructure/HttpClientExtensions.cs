@@ -20,7 +20,8 @@ namespace gpconnect_appointment_checker.Configuration.Infrastructure
             {
                 options.Timeout = new TimeSpan(0, 0, 0, int.Parse(configuration.GetSection("spine:timeout_seconds").GetConfigurationString("30")));
                 options.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/fhir+json"));
-                options.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoCache = true };
+                options.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue { NoStore = true };
+                options.DefaultRequestHeaders.Pragma.Add(new NameValueHeaderValue("no-cache"));
             }).ConfigurePrimaryHttpMessageHandler(() => CreateHttpMessageHandler(configuration, env));
         }
 
