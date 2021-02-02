@@ -13,6 +13,12 @@ namespace gpconnect_appointment_checker.Configuration.Infrastructure
         public static void ConfigureApplicationBuilderServices(this IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseExceptionHandler("/Error");
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedProto
+            });
+
             app.UseHsts();
 
             app.UseHttpsRedirection();
@@ -39,11 +45,6 @@ namespace gpconnect_appointment_checker.Configuration.Infrastructure
             });
 
             app.UseResponseCompression();
-
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedProto
-            });
             
             app.UseAuthentication();
             app.UseAuthorization();
