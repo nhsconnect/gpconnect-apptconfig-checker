@@ -121,7 +121,7 @@ namespace gpconnect_appointment_checker.SDS
             catch (Exception exc)
             {
                 _logger.LogError("An Exception has occurred while attempting to execute an LDAP query", exc);
-                _logger.LogError($"EXCEPTION: {ldapException}");
+                _logger.LogError($"EXCEPTION: {exc}");
                 throw;
             }
         }
