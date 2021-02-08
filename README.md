@@ -36,22 +36,22 @@ Create a blank database in postgres, then build and run the docker database imag
 
 ```
 cd database
-docker build -t gpconnect-appointment-checker-database .
-docker run --rm gpconnect-appointment-checker-database -url=jdbc:postgresql://PG_HOST/PG_DBNAME -user=PG_USER -password=PG_PASS migrate
+docker build -t gpconnect-appointment-checker-dbpatcher .
+docker run --rm gpconnect-appointment-checker-dbpatcher -url=jdbc:postgresql://PG_HOST/PG_DBNAME -user=PG_USER -password=PG_PASS migrate
 ```
 
 Then build and run the docker application image as follows, replacing the `PG_` variables with your postgres database connection details:
 
 ```
 cd source
-docker build -t gpconnect-appointment-checker .
-docker run -d -p 8000:80 -e "ConnectionStrings:DefaultConnection=Server=PG_HOST;Port=PG_PORT;Database=PG_DBNAME;User Id=PG_USERID;Password=PG_PASS" --name gpconnect-appointment-checker gpconnect-appointment-checker
+docker build -t gpconnect-appointment-checker-application .
+docker run -d -p 8000:80 -e "ConnectionStrings:DefaultConnection=Server=PG_HOST;Port=PG_PORT;Database=PG_DBNAME;User Id=PG_USERID;Password=PG_PASS" --name gpconnect-appointment-checker-application gpconnect-appointment-checker-application
 ```
 
 To run over HTTPS replace the last command above with the following, replacing the `PG_` variables with your postgres database connection details, and supplying the path to PFX file via the command line:
 
 ```
-docker run -d -p 5001:443 -e ASPNETCORE_URLS="https://+" -e ASPNETCORE_HTTPS_PORT=5001 -e ASPNETCORE_Kestrel__Certificates__Default__Path=/certs/localhost.pfx -e "ConnectionStrings:DefaultConnection=Server=PG_HOST;Port=PG_PORT;Database=PG_DBNAME;User Id=PG_USERID;Password=PG_PASS" -v /path/to/certs:/certs --name gpconnect-appointment-checker gpconnect-appointment-checker
+docker run -d -p 5001:443 -e ASPNETCORE_URLS="https://+" -e ASPNETCORE_HTTPS_PORT=5001 -e ASPNETCORE_Kestrel__Certificates__Default__Path=/certs/localhost.pfx -e "ConnectionStrings:DefaultConnection=Server=PG_HOST;Port=PG_PORT;Database=PG_DBNAME;User Id=PG_USERID;Password=PG_PASS" -v /path/to/certs:/certs --name gpconnect-appointment-checker-application gpconnect-appointment-checker-application
 ```
 
 ## Test
