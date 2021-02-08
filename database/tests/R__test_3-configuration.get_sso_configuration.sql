@@ -6,7 +6,8 @@ select
 	challenge_scheme,
 	auth_endpoint,
 	token_endpoint,
-	metadata_endpoint
+	metadata_endpoint,
+	signed_out_callback_path
 from configuration.get_sso_configuration
 (
 );
