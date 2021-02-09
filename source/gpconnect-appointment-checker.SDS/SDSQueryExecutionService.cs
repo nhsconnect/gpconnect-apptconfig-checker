@@ -24,6 +24,7 @@ namespace gpconnect_appointment_checker.SDS
         private static IConfiguration _configuration;
         private readonly IHttpContextAccessor _context;
         private static X509Certificate _clientCertificate;
+        private static bool _haveLoggedTlsVersion = false;
 
         public SDSQueryExecutionService(ILogger<SDSQueryExecutionService> logger, ILogService logService, IConfiguration configuration, IHttpContextAccessor context)
         {
@@ -50,9 +51,21 @@ namespace gpconnect_appointment_checker.SDS
                 var useLdaps = bool.Parse(_configuration.GetSection("Spine:sds_use_ldaps").Value);
                 var useSdsMutualAuth = bool.Parse(_configuration.GetSection("Spine:sds_use_mutualauth").Value);
 
-                using (var ldapConnection = new LdapConnection
+                // temporarily test downgrade to TLS1.2
+                Novell.Directory.Ldap.LdapConnectionOptions ldapConnectionOptions = new LdapConnectionOptions();
+
+                if (useLdaps)
                 {
-                    SecureSocketLayer = useLdaps,
+                    ldapConnectionOptions.ConfigureSslProtocols(System.Security.Authentication.SslProtocols.Tls12);
+                    ldapConnectionOptions.UseSsl();
+                    ldapConnectionOptions.ConfigureLocalCertificateSelectionCallback(SelectLocalCertificate);
+                    ldapConnectionOptions.ConfigureRemoteCertificateValidationCallback(ValidateServerCertificate);
+                }
+                // end
+
+                using (var ldapConnection = new LdapConnection(ldapConnectionOptions)
+                {
+//                    SecureSocketLayer = useLdaps,
                     ConnectionTimeout = int.Parse(_configuration.GetSection("Spine:timeout_seconds").Value) * 1000
                 })
                 {
@@ -74,8 +87,8 @@ namespace gpconnect_appointment_checker.SDS
 
                         _clientCertificate = pfxFormattedCertificate;
 
-                        ldapConnection.UserDefinedServerCertValidationDelegate += ValidateServerCertificate;
-                        ldapConnection.UserDefinedClientCertSelectionDelegate += SelectLocalCertificate;
+//                        ldapConnection.UserDefinedServerCertValidationDelegate += ValidateServerCertificate;
+//                        ldapConnection.UserDefinedClientCertSelectionDelegate += SelectLocalCertificate;
                     }
 
                     var hostName = _configuration.GetSection("Spine:sds_hostname").Value;
@@ -83,6 +96,8 @@ namespace gpconnect_appointment_checker.SDS
 
                     ldapConnection.Connect(hostName, hostPort);
                     ldapConnection.Bind(string.Empty, string.Empty);
+
+                    LogTlsVersionOnStartup(ldapConnection);
 
                     var searchResults = ldapConnection.Search(searchBase, LdapConnection.ScopeSub, filter, attributes, false);
 
@@ -139,6 +154,46 @@ namespace gpconnect_appointment_checker.SDS
         private static X509Certificate SelectLocalCertificate(object sender, string targetHost, X509CertificateCollection localCertificates, X509Certificate remoteCertificate, string[] acceptableIssuers)
         {
             return _clientCertificate;
+        }
+
+        private static void LogTlsVersionOnStartup(LdapConnection ldapConnection)
+        {
+            if (_haveLoggedTlsVersion)
+                return;
+
+            try
+            {
+                string tlsVersion = GetTlsVersionInUse(ldapConnection);
+                _logger.LogInformation($"LDAP TLS version in use: {tlsVersion}");
+            }
+            finally
+            {
+                _haveLoggedTlsVersion = true;
+            }
+        }
+
+        private static string GetTlsVersionInUse(LdapConnection ldapConnection)
+        {
+            try
+            {
+                System.Reflection.PropertyInfo propertyInfo = typeof(LdapConnection).GetProperty("Connection", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                var connection = propertyInfo.GetValue(ldapConnection);
+
+                System.Reflection.FieldInfo fieldInfo = connection.GetType().GetField("_inStream", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                System.IO.Stream stream = (System.IO.Stream)fieldInfo.GetValue(connection);
+
+                SslStream sslStream = stream as SslStream;
+
+                if (sslStream == null)
+                    return "TLS not enabled";
+
+                return sslStream.SslProtocol.ToString();
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Error getting LDAP TLS version");
+                return "Error getting LDAP TLS version";
+            }
         }
     }
 }
